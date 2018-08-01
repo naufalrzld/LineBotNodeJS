@@ -22,18 +22,20 @@ app.get('/', function (req, res) {
 app.post('/webhook', line.middleware(configLine), (req, res) => {
     Promise
     .all(req.body.events.map(handleEvent))
-    .then((result) => res.json(result));
+    .then((result) => res.json(result))
+    .catch((e)=>{
+        console.log(e);
+    });
 });
 
 function handleEvent(event) {
-    if (event.type !== 'message' || event.message.type !== 'text') {
-        return Promise.resolve(null);
+    if(event.message.text === "hai"){
+        const echo = { type: 'text', text: "Halo juga :)·" };
+        return client.replyMessage(event.replyToken, echo);
     }
 
-    return client.replyMessage(event.replyToken, {
-        type: 'text',
-        text: event.message.text
-    });
+    const echo = { type: 'text', text: "Saya tidak mengerti, saya simpan dulu" };
+    return client.replyMessage(event.replyToken, echo);
 }
 
 app.listen(PORT, function () {
